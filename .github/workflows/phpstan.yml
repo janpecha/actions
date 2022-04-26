@@ -1,0 +1,38 @@
+name: Static Analysis
+
+on:
+  workflow_call:
+    inputs:
+      configFile:
+        type: string
+        default: 'phpstan.neon'
+
+      extensions:
+        type: string
+        default: ''
+
+      workingDirectory:
+        type: string
+        default: '.'
+
+jobs:
+    phpstan:
+        name: PHPStan
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ${{ inputs.workingDirectory }}
+        steps:
+            - uses: actions/checkout@v2
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 7.4
+                  coverage: none
+
+            - run: composer install --no-interaction --prefer-dist
+            - run: mkdir -p ${{ runner.temp }}/phpstan
+            - run: composer require --dev phpstan/phpstan ^1.0 -d ${{ runner.temp }}/phpstan --no-progress
+            - run: composer require --dev phpstan/extension-installer -d ${{ runner.temp }}/phpstan
+            - if: ${{ inputs.extensions != '' }}
+              run: composer require --dev ${{ inputs.extensions }} -d ${{ runner.temp }}/phpstan
+            - run: ${{ runner.temp }}/phpstan/vendor/bin/phpstan analyse --no-progress --configuration ${{ inputs.configFile }}
