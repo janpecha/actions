@@ -1,0 +1,41 @@
+name: Nette Tester
+
+on:
+  workflow_call:
+    inputs:
+      phpVersion:
+        required: true
+        type: string
+
+      testsDirectory:
+        type: string
+        default: 'tests'
+
+      workingDirectory:
+        type: string
+        default: '.'
+
+jobs:
+    tests:
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ${{ inputs.workingDirectory }}
+        strategy:
+            fail-fast: false
+
+        name: PHP ${{ inputs.phpVersion }} tests
+        steps:
+            - uses: actions/checkout@v2
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ inputs.phpVersion }}
+                  coverage: none
+
+            - run: composer install --no-interaction --prefer-dist
+            - run: vendor/bin/tester ${{ inputs.testsDirectory }} -s -C
+            - if: failure()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: output
+                  path: tests/**/output

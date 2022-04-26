@@ -1,0 +1,66 @@
+name: Nette Tester
+
+on:
+  workflow_call:
+    inputs:
+      phpVersions:
+        required: true
+        type: string
+
+      testsDirectory:
+        type: string
+        default: 'tests'
+
+      lowestDependencies:
+        type: boolean
+        default: false
+
+      workingDirectory:
+        type: string
+        default: '.'
+
+jobs:
+    tests:
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ${{ inputs.workingDirectory }}
+        strategy:
+            matrix:
+                php: ${{ fromJson(inputs.phpVersions) }}
+
+            fail-fast: false
+
+        name: PHP ${{ matrix.php }} tests
+        steps:
+            - uses: actions/checkout@v2
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  coverage: none
+
+            - run: composer install --no-interaction --prefer-dist
+            - run: vendor/bin/tester ${{ inputs.testsDirectory }} -s -C
+            - if: failure()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: output
+                  path: tests/**/output
+
+
+    lowest_dependencies:
+        if: ${{ inputs.lowestDependencies }}
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ${{ inputs.workingDirectory }}
+        name: Lowest Dependencies
+        steps:
+            - uses: actions/checkout@v2
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ fromJson(inputs.phpVersions)[0] }}
+                  coverage: none
+
+            - run: composer update --no-interaction --prefer-dist --prefer-lowest --prefer-stable
+            - run: vendor/bin/tester ${{ inputs.testsDirectory }} -s -C
