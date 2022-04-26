@@ -1,0 +1,19 @@
+name: Code Checker
+
+on:
+  workflow_call:
+
+jobs:
+    code-checker:
+        name: Code Standard Checker
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 7.4
+                  coverage: none
+
+            - run: mkdir ${{ runner.temp }}/janpecha_code-checker
+            - run: composer create-project janpecha/code-checker ${{ runner.temp }}/janpecha_code-checker ^1.0 --no-progress
+            - run: ${{ runner.temp }}/janpecha_code-checker/code-checker --no-progress
