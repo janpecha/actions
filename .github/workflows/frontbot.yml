@@ -1,0 +1,41 @@
+name: FrontBot
+
+on:
+  workflow_call:
+    inputs:
+      assignees:
+        required: true
+        type: string
+
+    secrets:
+      FRONTBOT_TOKEN:
+        required: true
+
+jobs:
+    frontbot:
+        name: FrontBot
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 7.4
+                  coverage: none
+
+            - run: composer create-project janpecha/composer-updater ${{ runner.temp }}/composer-updater --no-progress
+            - run: ${{ runner.temp }}/composer-updater/composer-updater
+
+            - run: composer create-project janpecha/code-checker ${{ runner.temp }}/code-checker ^1.0 --no-progress
+            - name: Code Checker Fixes
+              run: ${{ runner.temp }}/code-checker/code-checker --fix --no-progress
+
+            - name: Create Pull Request
+              uses: peter-evans/create-pull-request@v3
+              with:
+                  token: ${{ secrets.FRONTBOT_TOKEN }}
+                  commit-message: "Composer: updated"
+                  branch: frontbot/updates
+                  delete-branch: true
+                  title: 'FrontBot: updated dependencies'
+                  body: "Auto-updated dependencies"
+                  assignees: ${{ inputs.assignees }}
