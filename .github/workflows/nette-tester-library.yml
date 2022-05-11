@@ -19,6 +19,10 @@ on:
         type: string
         default: '.'
 
+    secrets:
+      COMPOSER_AUTH_CONFIG:
+        required: false
+
 jobs:
     tests:
         runs-on: ubuntu-latest
@@ -38,6 +42,12 @@ jobs:
               with:
                   php-version: ${{ matrix.php }}
                   coverage: none
+
+            -
+              env:
+                COMPOSER_AUTH_CONFIG: ${{ secrets.COMPOSER_AUTH_CONFIG }}
+              if: ${{ env.COMPOSER_AUTH_CONFIG != '' }}
+              run: printenv COMPOSER_AUTH_CONFIG > ./auth.json
 
             - run: composer install --no-interaction --prefer-dist
             - run: vendor/bin/tester ${{ inputs.testsDirectory }} -s -C
@@ -61,6 +71,12 @@ jobs:
               with:
                   php-version: ${{ fromJson(inputs.phpVersions)[0] }}
                   coverage: none
+
+            -
+              env:
+                COMPOSER_AUTH_CONFIG: ${{ secrets.COMPOSER_AUTH_CONFIG }}
+              if: ${{ env.COMPOSER_AUTH_CONFIG != '' }}
+              run: printenv COMPOSER_AUTH_CONFIG > ./auth.json
 
             - run: composer update --no-interaction --prefer-dist --prefer-lowest --prefer-stable
             - run: vendor/bin/tester ${{ inputs.testsDirectory }} -s -C
