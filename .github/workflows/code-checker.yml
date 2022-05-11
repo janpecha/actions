@@ -2,11 +2,22 @@ name: Code Checker
 
 on:
   workflow_call:
+    inputs:
+      workingDirectory:
+        type: string
+        default: '.'
+
+    secrets:
+      COMPOSER_AUTH_CONFIG:
+        required: false
 
 jobs:
     code-checker:
         name: Code Standard Checker
         runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ${{ inputs.workingDirectory }}
         steps:
             - uses: actions/checkout@v2
             - uses: shivammathur/setup-php@v2
@@ -14,6 +25,13 @@ jobs:
                   php-version: 7.4
                   coverage: none
 
+            -
+              env:
+                COMPOSER_AUTH_CONFIG: ${{ secrets.COMPOSER_AUTH_CONFIG }}
+              if: ${{ env.COMPOSER_AUTH_CONFIG != '' }}
+              run: printenv COMPOSER_AUTH_CONFIG > ./auth.json
+
+            - run: composer install --no-interaction --prefer-dist
             - run: mkdir ${{ runner.temp }}/janpecha_code-checker
             - run: composer create-project janpecha/code-checker ${{ runner.temp }}/janpecha_code-checker ^1.0 --no-progress
             - run: ${{ runner.temp }}/janpecha_code-checker/code-checker --no-progress
