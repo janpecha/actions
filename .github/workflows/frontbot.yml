@@ -4,7 +4,6 @@ on:
   workflow_call:
     inputs:
       assignees:
-        required: true
         type: string
 
     secrets:
