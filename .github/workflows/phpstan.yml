@@ -43,6 +43,7 @@ jobs:
             - run: mkdir -p ${{ runner.temp }}/phpstan
             - run: composer require --dev phpstan/phpstan ^1.0 -d ${{ runner.temp }}/phpstan --no-progress
             - run: composer require --dev phpstan/extension-installer -d ${{ runner.temp }}/phpstan
+            - run: composer config --no-plugins allow-plugins.phpstan/extension-installer true -d ${{ runner.temp }}/phpstan
             - if: ${{ inputs.extensions != '' }}
               run: composer require --dev ${{ inputs.extensions }} -d ${{ runner.temp }}/phpstan
             - run: ${{ runner.temp }}/phpstan/vendor/bin/phpstan analyse --no-progress --configuration ${{ inputs.configFile }}
