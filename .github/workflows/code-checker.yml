@@ -33,5 +33,5 @@ jobs:
 
             - run: composer install --no-interaction --prefer-dist
             - run: mkdir ${{ runner.temp }}/janpecha_code-checker
-            - run: composer create-project janpecha/code-checker ${{ runner.temp }}/janpecha_code-checker ^1.0 --no-progress
+            - run: composer create-project janpecha/code-checker ${{ runner.temp }}/janpecha_code-checker ^1.0 --no-progress --no-plugins
             - run: ${{ runner.temp }}/janpecha_code-checker/code-checker --no-progress
