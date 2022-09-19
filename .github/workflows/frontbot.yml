@@ -6,6 +6,10 @@ on:
       assignees:
         type: string
 
+      committer:
+        required: true
+        type: string
+
     secrets:
       FRONTBOT_TOKEN:
         required: true
@@ -38,3 +42,5 @@ jobs:
                   title: 'FrontBot: updated dependencies'
                   body: "Auto-updated dependencies"
                   assignees: ${{ inputs.assignees }}
+                  author: ${{ inputs.committer }}
+                  committer: ${{ inputs.committer }}
