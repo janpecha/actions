@@ -36,7 +36,7 @@ jobs:
               uses: peter-evans/create-pull-request@v3
               with:
                   token: ${{ secrets.FRONTBOT_TOKEN }}
-                  commit-message: "Composer: updated"
+                  commit-message: "Composer: updated dependencies"
                   branch: frontbot/updates
                   delete-branch: true
                   title: 'FrontBot: updated dependencies'
