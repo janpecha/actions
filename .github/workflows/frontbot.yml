@@ -33,7 +33,7 @@ jobs:
               run: ${{ runner.temp }}/code-checker/code-checker --fix --no-progress
 
             - name: Create Pull Request
-              uses: peter-evans/create-pull-request@v3
+              uses: peter-evans/create-pull-request@v5
               with:
                   token: ${{ secrets.FRONTBOT_TOKEN }}
                   commit-message: "Composer: updated dependencies"
