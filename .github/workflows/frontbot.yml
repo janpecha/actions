@@ -14,6 +14,9 @@ on:
       FRONTBOT_TOKEN:
         required: true
 
+      COMPOSER_AUTH_CONFIG:
+        required: false
+
 jobs:
     frontbot:
         name: FrontBot
@@ -24,6 +27,12 @@ jobs:
               with:
                   php-version: 8.2
                   coverage: none
+
+            -
+              env:
+                COMPOSER_AUTH_CONFIG: ${{ secrets.COMPOSER_AUTH_CONFIG }}
+              if: ${{ env.COMPOSER_AUTH_CONFIG != '' }}
+              run: printenv COMPOSER_AUTH_CONFIG > ./auth.json
 
             - run: composer create-project janpecha/composer-updater ${{ runner.temp }}/composer-updater --no-progress
             - run: ${{ runner.temp }}/composer-updater/composer-updater update
