@@ -44,7 +44,7 @@ jobs:
             - run: composer create-project janpecha/composer-updater ${{ runner.temp }}/composer-updater --no-progress
             - run: ${{ runner.temp }}/composer-updater/composer-updater update
 
-            - run: composer create-project janpecha/code-checker ${{ runner.temp }}/code-checker ^1.0 --no-progress
+            - run: composer create-project janpecha/code-checker ${{ runner.temp }}/code-checker --no-progress
             - name: Code Checker Fixes
               run: ${{ runner.temp }}/code-checker/code-checker --fix --no-progress
 
