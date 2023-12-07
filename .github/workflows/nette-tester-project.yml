@@ -3,12 +3,8 @@ name: Nette Tester
 on:
   workflow_call:
     inputs:
-      phpVersion:
-        required: false
-        type: string
-
       phpVersions:
-        required: false
+        required: true
         type: string
 
       testsDirectory:
@@ -24,37 +20,6 @@ on:
         required: false
 
 jobs:
-    tests_one_version:
-        if: ${{ inputs.phpVersion }}
-        runs-on: ubuntu-latest
-        defaults:
-            run:
-                working-directory: ${{ inputs.workingDirectory }}
-        strategy:
-            fail-fast: false
-
-        name: PHP ${{ inputs.phpVersion }} tests
-        steps:
-            - uses: actions/checkout@v3
-            - uses: shivammathur/setup-php@v2
-              with:
-                  php-version: ${{ inputs.phpVersion }}
-                  coverage: none
-
-            -
-              env:
-                COMPOSER_AUTH_CONFIG: ${{ secrets.COMPOSER_AUTH_CONFIG }}
-              if: ${{ env.COMPOSER_AUTH_CONFIG != '' }}
-              run: printenv COMPOSER_AUTH_CONFIG > ./auth.json
-
-            - run: composer install --no-interaction --prefer-dist
-            - run: vendor/bin/tester ${{ inputs.testsDirectory }} -s -C
-            - if: failure()
-              uses: actions/upload-artifact@v2
-              with:
-                  name: output
-                  path: tests/**/output
-
     tests:
         if: ${{ inputs.phpVersions }}
         runs-on: ubuntu-latest
