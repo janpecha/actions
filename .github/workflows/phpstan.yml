@@ -3,6 +3,10 @@ name: Static Analysis
 on:
   workflow_call:
     inputs:
+      phpVersions:
+        type: string
+        default: '["8.1", "8.2", "8.3"]'
+
       configFile:
         type: string
         default: 'phpstan.neon'
@@ -21,16 +25,22 @@ on:
 
 jobs:
     phpstan:
-        name: PHPStan
         runs-on: ubuntu-latest
         defaults:
             run:
                 working-directory: ${{ inputs.workingDirectory }}
+        strategy:
+            matrix:
+                php: ${{ fromJson(inputs.phpVersions) }}
+
+            fail-fast: false
+
+        name: "PHPStan - ${{ matrix.php }}"
         steps:
             - uses: actions/checkout@v3
             - uses: shivammathur/setup-php@v2
               with:
-                  php-version: 8.2
+                  php-version: ${{ matrix.php }}
                   coverage: none
 
             -
