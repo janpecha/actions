@@ -35,7 +35,7 @@ jobs:
 
             fail-fast: false
 
-        name: "PHPStan - ${{ matrix.php }}"
+        name: "PHPStan - PHP ${{ matrix.php }}"
         steps:
             - uses: actions/checkout@v3
             - uses: shivammathur/setup-php@v2
