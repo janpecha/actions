@@ -13,7 +13,7 @@ on:
 
       lowestDependencies:
         type: boolean
-        default: false
+        default: true
 
       workingDirectory:
         type: string
@@ -64,12 +64,12 @@ jobs:
         defaults:
             run:
                 working-directory: ${{ inputs.workingDirectory }}
-        name: Lowest Dependencies
+        name: PHP ${{ matrix.php }} tests - lowest
         steps:
             - uses: actions/checkout@v3
             - uses: shivammathur/setup-php@v2
               with:
-                  php-version: ${{ fromJson(inputs.phpVersions)[0] }}
+                  php-version: ${{ matrix.php }}
                   coverage: none
 
             -
@@ -80,3 +80,8 @@ jobs:
 
             - run: composer update --no-interaction --prefer-dist --prefer-lowest --prefer-stable
             - run: vendor/bin/tester ${{ inputs.testsDirectory }} -s -C
+            - if: failure()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: output
+                  path: tests/**/output
