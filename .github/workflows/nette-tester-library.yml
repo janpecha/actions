@@ -70,7 +70,7 @@ jobs:
 
             fail-fast: false
 
-        name: PHP ${{ matrix.php }} tests - lowest dependencies
+        name: ${{ inputs.lowestDependencies && format('PHP {0} tests - lowest dependencies', matrix.php) || 'PHP tests - lowest dependencies' }}
         steps:
             - uses: actions/checkout@v3
             - uses: shivammathur/setup-php@v2
