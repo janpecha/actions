@@ -70,7 +70,7 @@ jobs:
                 working-directory: ${{ inputs.workingDirectory }}
         strategy:
             matrix:
-                php: ${{ inputs.lowestDependenciesOnlyMinimal && fromJson(inputs.phpVersions) || fromJson(inputs.phpVersions)[0] }}
+                php: ${{ inputs.lowestDependenciesOnlyMinimal && fromJson(inputs.phpVersions)[0] || fromJson(inputs.phpVersions) }}
 
             fail-fast: false
 
