@@ -41,7 +41,7 @@ jobs:
 
         name: PHP ${{ matrix.php }} tests
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
@@ -76,7 +76,7 @@ jobs:
 
         name: ${{ inputs.lowestDependencies && format('PHP {0} tests - lowest dependencies', matrix.php) || 'PHP tests - lowest dependencies' }}
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
