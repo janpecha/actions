@@ -48,7 +48,10 @@ jobs:
               run: composer create-project janpecha/code-checker ${{ runner.temp }}/code-checker --no-progress
 
             - name: Code Checker Fixes
-              run: ${{ runner.temp }}/code-checker/code-checker --fix --git --no-progress
+              run: |
+                git config user.name "$(echo "${{ inputs.committer }}" | sed "s/[<>]/\n/g" | sed 1q)"
+                git config user.email "$(echo "${{ inputs.committer }}" | sed "s/[<>]/\n/g" | sed -e 1d -e 2q)"
+                ${{ runner.temp }}/code-checker/code-checker --fix --git --no-progress
 
             - name: Composer Updater Installation
               run: composer create-project janpecha/composer-updater ${{ runner.temp }}/composer-updater --no-progress
