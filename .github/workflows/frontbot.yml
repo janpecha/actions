@@ -41,11 +41,22 @@ jobs:
               if: ${{ env.COMPOSER_AUTH_CONFIG != '' }}
               run: printenv COMPOSER_AUTH_CONFIG > ./auth.json
 
-            - run: composer create-project janpecha/composer-updater ${{ runner.temp }}/composer-updater --no-progress
-            - run: ${{ runner.temp }}/composer-updater/composer-updater update
+            - name: 'Composer Installation of Dependencies'
+              run: composer install --no-interaction --prefer-dist
 
-            - run: composer create-project janpecha/code-checker ${{ runner.temp }}/code-checker --no-progress
+            - name: Code Checker Installation
+              run: composer create-project janpecha/code-checker ${{ runner.temp }}/code-checker --no-progress
+
             - name: Code Checker Fixes
+              run: ${{ runner.temp }}/code-checker/code-checker --fix --git --no-progress
+
+            - name: Composer Updater Installation
+              run: composer create-project janpecha/composer-updater ${{ runner.temp }}/composer-updater --no-progress
+
+            - name: Composer Updater Execution
+              run: ${{ runner.temp }}/composer-updater/composer-updater update
+
+            - name: Code Checker Upgrade Fixes
               run: ${{ runner.temp }}/code-checker/code-checker --fix --no-progress
 
             - name: Create Pull Request
@@ -55,8 +66,8 @@ jobs:
                   commit-message: "Composer: updated dependencies"
                   branch: frontbot/updates
                   delete-branch: true
-                  title: 'FrontBot: updated dependencies'
-                  body: "Auto-updated dependencies"
+                  title: 'FrontBot: project upgrade'
+                  body: "Project auto-upgraded by FrontBot"
                   assignees: ${{ inputs.assignees }}
                   author: ${{ inputs.committer }}
                   committer: ${{ inputs.committer }}
