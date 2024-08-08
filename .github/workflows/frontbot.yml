@@ -14,6 +14,18 @@ on:
         type: string
         default: '.'
 
+      updateRequiredPhp:
+        type: boolean
+        default: false
+
+      minimalRequiredPhp:
+        type: string
+        default: '7.4'
+
+      maximalRequiredPhp:
+        type: string
+        default: '8.3'
+
     secrets:
       FRONTBOT_TOKEN:
         required: true
@@ -35,11 +47,16 @@ jobs:
                   php-version: 8.2
                   coverage: none
 
-            -
+            - name: 'Configure Composer Auth'
               env:
                 COMPOSER_AUTH_CONFIG: ${{ secrets.COMPOSER_AUTH_CONFIG }}
               if: ${{ env.COMPOSER_AUTH_CONFIG != '' }}
               run: printenv COMPOSER_AUTH_CONFIG > ./auth.json
+
+            - name: 'Configure Git User'
+              run: |
+                git config user.name "$(echo "${{ inputs.committer }}" | sed "s/[<>]/\n/g" | sed 1q)"
+                git config user.email "$(echo "${{ inputs.committer }}" | sed "s/[<>]/\n/g" | sed -e 1d -e 2q)"
 
             - name: 'Composer Installation of Dependencies'
               run: composer install --no-interaction --prefer-dist
@@ -48,10 +65,14 @@ jobs:
               run: composer create-project janpecha/code-checker ${{ runner.temp }}/code-checker --no-progress
 
             - name: Code Checker Fixes
+              run: ${{ runner.temp }}/code-checker/code-checker --fix --git --no-progress
+
+            - name: Update of required PHP versions
+              if: ${{ inputs.updateRequiredPhp }}
               run: |
-                git config user.name "$(echo "${{ inputs.committer }}" | sed "s/[<>]/\n/g" | sed 1q)"
-                git config user.email "$(echo "${{ inputs.committer }}" | sed "s/[<>]/\n/g" | sed -e 1d -e 2q)"
-                ${{ runner.temp }}/code-checker/code-checker --fix --git --no-progress
+                composer require php "${{ inputs.minimalRequiredPhp }} - ${{ inputs.maximalRequiredPhp }}"
+                ${{ runner.temp }}/code-checker/code-checker --fix --no-progress
+                git commit -m "Updated required PHP ${{ inputs.minimalRequiredPhp }} - ${{ inputs.maximalRequiredPhp }}"
 
             - name: Composer Updater Installation
               run: composer create-project janpecha/composer-updater ${{ runner.temp }}/composer-updater --no-progress
