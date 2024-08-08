@@ -26,6 +26,10 @@ on:
         type: string
         default: '8.3'
 
+      ignoreVendorDirectory:
+        type: boolean
+        default: false
+
     secrets:
       FRONTBOT_TOKEN:
         required: true
@@ -60,6 +64,10 @@ jobs:
 
             - name: 'Composer Installation of Dependencies'
               run: composer install --no-interaction --prefer-dist
+
+            - name: Ignoring of vendor directory
+              if: ${{ inputs.ignoreVendorDirectory }}
+              run: echo "*" > vendor/.gitignore
 
             - name: Code Checker Installation
               run: composer create-project janpecha/code-checker ${{ runner.temp }}/code-checker --no-progress
