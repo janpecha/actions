@@ -51,7 +51,7 @@ jobs:
 
             - run: composer install --no-interaction --prefer-dist
             - run: mkdir -p ${{ runner.temp }}/phpstan
-            - run: composer require --dev phpstan/phpstan ^1.0 -d ${{ runner.temp }}/phpstan --no-progress
+            - run: composer require --dev phpstan/phpstan ^2.0 -d ${{ runner.temp }}/phpstan --no-progress
             - run: composer config --no-plugins allow-plugins true -d ${{ runner.temp }}/phpstan
             - run: composer require --dev phpstan/extension-installer -d ${{ runner.temp }}/phpstan
             - if: ${{ inputs.extensions != '' }}
